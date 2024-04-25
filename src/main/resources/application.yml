@@ -1,0 +1,119 @@
+app:
+  application-name: gateway # change
+  hostname: localhost # change
+  server-port: 8181 # change
+  eureka-hostname: localhost
+  eureka-port: 8761
+  user-service-context-path: api/user
+  product-service-context-path: api/product
+  order-service-context-path: api/order
+  inventory-service-context-path: api/inventory
+  payment-service-context-path: api/payment
+  notification-service-context-path: api/notification
+  api-docs-path: api-docs
+  zipkin-hostname: localhost
+  zipkin-server-port: 9411
+  zipkin-context-path: api/v2/spans
+  keycloak-host: localhost
+  keycloak-port: 8090
+
+spring:
+  application:
+    name: ${app.application-name}-service
+  main:
+    web-application-type: reactive
+  cloud:
+    gateway:
+      globalcors:
+        '[/**]':
+          allowedOrigins: "*"
+          allowedMethods: "*"
+      discovery:
+        locator:
+          enabled: true
+#      default-filters:
+#        - TokenRelay
+      routes:
+#        - id: product-service
+#          uri: lb://product-service
+#          predicates:
+#            - Path=/api/product/**
+#        - id: user-service
+#          uri: lb://user-service
+#          predicates:
+#            - Path=/api/user/**
+#        - id: order-service
+#          uri: lb://order-service
+#          predicates:
+#            - Path=/api/order/**
+        - id: inventory-service
+          uri: lb://inventory-service
+          predicates:
+            - Path=/api/inventory/**
+#        - id: notification-service
+#          uri: lb://notification-service
+#          predicates:
+#            - Path=/api/notification/**
+#        - id: payment-service
+#          uri: lb://payment-service
+#          predicates:
+#            - Path=/api/payment/**
+        - id: discovery-serverice
+          uri: http://${app.eureka-hostname}:${app.eureka-port}
+          predicates:
+            - Path=/eureka/web
+          filters:
+            - SetPath=/
+#        - id: discovery-server-static
+#          uri: http://${app.eureka-hostname}:${app.eureka-port}
+#          predicates:
+#            - Path=/eureka/**
+
+server:
+  port: ${app.server-port}
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://${app.eureka-hostname}:${app.eureka-port}/eureka
+    registry-fetch-interval-seconds: 5
+  instance:
+    lease-renewal-interval-in-seconds: 5
+
+#management:
+#  tracing:
+#    enabled: true
+#    propagation:
+#      type: b3
+#    sampling:
+#      probability: 1.0
+#  health:
+#    circuitbreakers:
+#      enabled: true
+#  endpoints:
+#    web:
+#      exposure:
+#        include: "*"
+#  endpoint:
+#    health:
+#      show-details: always
+#  zipkin:
+#    tracing:
+#      endpoint: http://${app.zipkin-hostname}:${app.zipkin-server-port}/${app.zipkin-context-path}
+
+
+management:
+  endpoint:
+    health:
+      show-details: always
+  health:
+    diskspace:
+      enabled: true
+    db:
+      enabled: false
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+
+
