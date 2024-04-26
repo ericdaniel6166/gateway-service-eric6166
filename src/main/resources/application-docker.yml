@@ -1,2 +1,3 @@
 app:
   eureka-hostname: discovery-service
+  keycloak-host: keycloak
