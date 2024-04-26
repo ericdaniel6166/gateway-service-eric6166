@@ -67,10 +67,10 @@ spring:
 #          uri: lb://product-service
 #          predicates:
 #            - Path=/api/product/**
-#        - id: user-service
-#          uri: lb://user-service
-#          predicates:
-#            - Path=/api/user/**
+        - id: user-service
+          uri: lb://user-service
+          predicates:
+            - Path=/api/user/**
 #        - id: order-service
 #          uri: lb://order-service
 #          predicates:
@@ -93,10 +93,10 @@ spring:
             - Path=/eureka/web
           filters:
             - SetPath=/
-#        - id: discovery-server-static
-#          uri: http://${app.eureka-hostname}:${app.eureka-port}
-#          predicates:
-#            - Path=/eureka/**
+        - id: discovery-serverice-static
+          uri: http://${app.eureka-hostname}:${app.eureka-port}
+          predicates:
+            - Path=/eureka/**
 
 server:
   port: ${app.server-port}
@@ -112,8 +112,8 @@ eureka:
 springdoc:
   swagger-ui:
     urls:
-#      - name: user-service
-#        url: http://${app.hostname}:${app.server-port}/${app.user-service-context-path}/${app.api-docs-path}
+      - name: user-service
+        url: http://${app.hostname}:${app.server-port}/${app.user-service-context-path}/${app.api-docs-path}
 #      - name: product-service
 #        url: http://${app.hostname}:${app.server-port}/${app.product-service-context-path}/${app.api-docs-path}
 #      - name: order-service
