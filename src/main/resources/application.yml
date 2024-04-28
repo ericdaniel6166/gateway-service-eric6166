@@ -158,6 +158,12 @@ logging:
 
 
 management:
+#  tracing:
+#    enabled: true
+#    propagation:
+#      type: b3
+#    sampling:
+#      probability: 1.0
   endpoint:
     health:
       show-details: always
@@ -170,5 +176,9 @@ management:
     web:
       exposure:
         include: "*"
+#  zipkin:
+#    tracing:
+#      endpoint: http://${app.zipkin-hostname}:${app.zipkin-server-port}/${app.zipkin-context-path}
+
 
 

@@ -1,3 +1,4 @@
 app:
   eureka-hostname: discovery-service
   keycloak-host: keycloak
+  zipkin-hostname: zipkin
