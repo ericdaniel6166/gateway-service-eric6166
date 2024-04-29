@@ -38,6 +38,8 @@ security:
 spring:
   application:
     name: ${app.application-name}-service
+  profiles:
+    active: local
   main:
     web-application-type: reactive
   security:
