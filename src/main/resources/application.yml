@@ -15,6 +15,7 @@ app:
   zipkin-hostname: localhost # change
   zipkin-server-port: 9411
   zipkin-context-path: api/v2/spans
+  zipkin-endpoint: http://${app.zipkin-hostname}:${app.zipkin-server-port}/${app.zipkin-context-path}
   keycloak-host: localhost # change
   keycloak-port: 8090
 
@@ -178,7 +179,7 @@ management:
         include: "*"
 #  zipkin:
 #    tracing:
-#      endpoint: http://${app.zipkin-hostname}:${app.zipkin-server-port}/${app.zipkin-context-path}
+#      endpoint: ${app.zipkin-endpoint}
 
 
 
