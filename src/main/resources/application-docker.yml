@@ -3,9 +3,9 @@ app:
   keycloak-host: keycloak
   zipkin-hostname: zipkin
 
-spring:
-  profiles:
-    active: docker
+#spring:
+#  profiles:
+#    active: docker
 
 logging:
   level:
