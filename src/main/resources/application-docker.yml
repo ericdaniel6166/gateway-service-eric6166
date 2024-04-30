@@ -7,6 +7,6 @@ spring:
   profiles:
     active: docker
 
-#logging:
-#  level:
-#    root: INFO
+logging:
+  level:
+    root: INFO
