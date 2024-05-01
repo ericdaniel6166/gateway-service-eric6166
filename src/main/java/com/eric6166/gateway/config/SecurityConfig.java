@@ -29,6 +29,8 @@ public class SecurityConfig {
                 .oauth2Login(Customizer.withDefaults())
                 .httpBasic(ServerHttpSecurity.HttpBasicSpec::disable)
                 .formLogin(ServerHttpSecurity.FormLoginSpec::disable)
+                .oauth2Client(Customizer.withDefaults())
+                .logout(Customizer.withDefaults())
                 .build();
     }
 
