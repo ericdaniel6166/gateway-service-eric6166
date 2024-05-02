@@ -1,7 +1,10 @@
 app:
-  eureka-hostname: discovery-service
-  keycloak-host: keycloak
-  zipkin-hostname: zipkin
+  eureka:
+    hostname: discovery-service
+  keycloak:
+    host: keycloak
+  zipkin:
+    hostname: zipkin
 
 #spring:
 #  profiles:
