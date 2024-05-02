@@ -34,6 +34,7 @@ public class SecurityConfig {
                         .pathMatchers(securityProps.getSkipUrls()).permitAll()
                         .anyExchange().authenticated())
                 .oauth2Login(Customizer.withDefaults())
+//                .oauth2Login(oAuth2Login -> oAuth2Login.clientRegistrationRepository(clientRegistrationRepository()))
 //                .oauth2Login(oauth2 -> oauth2
 //                        .authenticationMatcher(new PathPatternParserServerWebExchangeMatcher("/login/oauth2/code/{registrationId}")))
 //                .oauth2Login(oauth2 -> oauth2
@@ -46,32 +47,32 @@ public class SecurityConfig {
     }
 
 
-    @Bean
-    public ReactiveClientRegistrationRepository clientRegistrationRepository() {
-        return new InMemoryReactiveClientRegistrationRepository(this.microservicesAuthClientRegistration());
-    }
-
-    private ClientRegistration microservicesAuthClientRegistration() {
-        var keycloak = oAuth2ClientProperties.getProvider().get("keycloak");
-        var microservicesAuthClient = oAuth2ClientProperties.getRegistration().get("microservices-auth-client");
-
-        return ClientRegistration.withRegistrationId("microservices-auth-client")
-                .clientId(microservicesAuthClient.getClientId())
-                .clientSecret(microservicesAuthClient.getClientSecret())
-//                .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
-                .clientAuthenticationMethod(new ClientAuthenticationMethod(microservicesAuthClient.getClientAuthenticationMethod()))
-//                .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
-                .authorizationGrantType(new AuthorizationGrantType(microservicesAuthClient.getAuthorizationGrantType()))
-                .redirectUri(microservicesAuthClient.getRedirectUri())
-                .scope(microservicesAuthClient.getScope())
-                .authorizationUri(keycloak.getAuthorizationUri())
-                .tokenUri(keycloak.getTokenUri())
-                .userInfoUri(keycloak.getUserInfoUri())
-//                .userNameAttributeName(IdTokenClaimNames.SUB)
-                .userNameAttributeName(keycloak.getUserNameAttribute())
-                .jwkSetUri(keycloak.getJwkSetUri())
-                .clientName(microservicesAuthClient.getClientName())
-                .build();
-    }
+//    @Bean
+//    public ReactiveClientRegistrationRepository clientRegistrationRepository() {
+//        return new InMemoryReactiveClientRegistrationRepository(microservicesAdminClientRegistration());
+//    }
+////
+//    public ClientRegistration microservicesAdminClientRegistration() {
+//        var keycloak = oAuth2ClientProperties.getProvider().get("keycloak");
+//        var microservicesAuthClient = oAuth2ClientProperties.getRegistration().get("microservices-admin-client");
+//
+//        return ClientRegistration.withRegistrationId("microservices-admin-client")
+//                .clientId(microservicesAuthClient.getClientId())
+//                .clientSecret(microservicesAuthClient.getClientSecret())
+////                .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
+//                .clientAuthenticationMethod(new ClientAuthenticationMethod(microservicesAuthClient.getClientAuthenticationMethod()))
+////                .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
+//                .authorizationGrantType(new AuthorizationGrantType(microservicesAuthClient.getAuthorizationGrantType()))
+//                .redirectUri(microservicesAuthClient.getRedirectUri())
+//                .scope(microservicesAuthClient.getScope())
+//                .authorizationUri(keycloak.getAuthorizationUri())
+//                .tokenUri(keycloak.getTokenUri())
+//                .userInfoUri(keycloak.getUserInfoUri())
+////                .userNameAttributeName(IdTokenClaimNames.SUB)
+//                .userNameAttributeName(keycloak.getUserNameAttribute())
+//                .jwkSetUri(keycloak.getJwkSetUri())
+//                .clientName(microservicesAuthClient.getClientName())
+//                .build();
+//    }
 
 }
