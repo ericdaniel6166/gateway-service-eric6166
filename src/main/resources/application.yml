@@ -18,6 +18,9 @@ app:
   zipkin-endpoint: http://${app.zipkin-hostname}:${app.zipkin-server-port}/${app.zipkin-context-path}
   keycloak-host: localhost # change
   keycloak-port: 8090
+  microservices-auth-client:
+    client-id: microservices-auth-client
+    client-secret: 123456789
 
 security:
   enabled: true
@@ -34,6 +37,7 @@ security:
     - /v3/api-docs/**
     - /actuator/**
     - /error/**
+    - /auth/**
 
 spring:
   application:
@@ -47,13 +51,41 @@ spring:
       client:
         provider:
           keycloak:
+            authorization-uri: http://${app.keycloak-host}:${app.keycloak-port}/realms/spring-boot-microservices-realm/protocol/openid-connect/auth
+            token-uri: http://${app.keycloak-host}:${app.keycloak-port}/realms/spring-boot-microservices-realm/protocol/openid-connect/token
+            user-info-uri: http://${app.keycloak-host}:${app.keycloak-port}/realms/spring-boot-microservices-realm/protocol/openid-connect/userinfo
+            #            user-info-authentication-method: GET
+            user-name-attribute: sub
+            jwk-set-uri: http://${app.keycloak-host}:${app.keycloak-port}/realms/spring-boot-microservices-realm/protocol/openid-connect/certs
             issuer-uri: http://${app.keycloak-host}:${app.keycloak-port}/realms/spring-boot-microservices-realm
+        #            token-introspection-uri: http://${app.keycloak-host}:${app.keycloak-port}/realms/spring-boot-microservices-realm/protocol/openid-connect/token/introspect
+        #            logout-uri: http://${app.keycloak-host}:${app.keycloak-port}/realms/spring-boot-microservices-realm/protocol/openid-connect/logout
         registration:
           microservices-auth-client:
             provider: keycloak
-            client-id: microservices-auth-client
-            client-secret: 123456789
-            scope: openid, profile, email, roles
+            client-id: ${app.microservices-auth-client.client-id}
+            client-secret: ${app.microservices-auth-client.client-secret}
+            client-authentication-method: client_secret_basic
+            #            client-authentication-method: client_secret_post
+            #            client-authentication-method: client_secret_jwt
+            authorization-grant-type: client_credentials
+            redirect-uri: http://${app.hostname}:${app.server-port}/login/oauth2/code/${app.microservices-auth-client.client-id}
+            #            redirect-uri: {baseUrl}/login/oauth2/code/{registrationId}
+            scope:
+              - openid
+              - profile
+              - email
+              - roles
+              - read
+              - write
+            client-name: Microservices Auth Client
+      authorizationserver:
+        endpoint:
+          token-introspection-uri:
+          oidc:
+            logout-uri:
+            user-info-uri:
+
   cloud:
     gateway:
       globalcors:
@@ -66,30 +98,30 @@ spring:
       default-filters:
         - TokenRelay
       routes:
-#        - id: product-service
-#          uri: lb://product-service
-#          predicates:
-#            - Path=/api/product/**
+        #        - id: product-service
+        #          uri: lb://product-service
+        #          predicates:
+        #            - Path=/api/product/**
         - id: user-service
           uri: lb://user-service
           predicates:
             - Path=/api/user/**
-#        - id: order-service
-#          uri: lb://order-service
-#          predicates:
-#            - Path=/api/order/**
+        #        - id: order-service
+        #          uri: lb://order-service
+        #          predicates:
+        #            - Path=/api/order/**
         - id: inventory-service
           uri: lb://inventory-service
           predicates:
             - Path=/api/inventory/**
-#        - id: notification-service
-#          uri: lb://notification-service
-#          predicates:
-#            - Path=/api/notification/**
-#        - id: payment-service
-#          uri: lb://payment-service
-#          predicates:
-#            - Path=/api/payment/**
+        #        - id: notification-service
+        #          uri: lb://notification-service
+        #          predicates:
+        #            - Path=/api/notification/**
+        #        - id: payment-service
+        #          uri: lb://payment-service
+        #          predicates:
+        #            - Path=/api/payment/**
         - id: discovery-serverice
           uri: http://${app.eureka-hostname}:${app.eureka-port}
           predicates:
@@ -117,16 +149,16 @@ springdoc:
     urls:
       - name: user-service
         url: http://${app.hostname}:${app.server-port}/${app.user-service-context-path}/${app.api-docs-path}
-#      - name: product-service
-#        url: http://${app.hostname}:${app.server-port}/${app.product-service-context-path}/${app.api-docs-path}
-#      - name: order-service
-#        url: http://${app.hostname}:${app.server-port}/${app.order-service-context-path}/${app.api-docs-path}
+      #      - name: product-service
+      #        url: http://${app.hostname}:${app.server-port}/${app.product-service-context-path}/${app.api-docs-path}
+      #      - name: order-service
+      #        url: http://${app.hostname}:${app.server-port}/${app.order-service-context-path}/${app.api-docs-path}
       - name: inventory-service
         url: http://${app.hostname}:${app.server-port}/${app.inventory-service-context-path}/${app.api-docs-path}
-#      - name: payment-service
-#        url: http://${app.hostname}:${app.server-port}/${app.payment-service-context-path}/${app.api-docs-path}
-#      - name: notification-service
-#        url: http://${app.hostname}:${app.server-port}/${app.notification-service-context-path}/${app.api-docs-path}
+    #      - name: payment-service
+    #        url: http://${app.hostname}:${app.server-port}/${app.payment-service-context-path}/${app.api-docs-path}
+    #      - name: notification-service
+    #        url: http://${app.hostname}:${app.server-port}/${app.notification-service-context-path}/${app.api-docs-path}
 
     path: /swagger-ui.html
 
@@ -161,12 +193,12 @@ logging:
 
 
 management:
-#  tracing:
-#    enabled: true
-#    propagation:
-#      type: b3
-#    sampling:
-#      probability: 1.0
+  #  tracing:
+  #    enabled: true
+  #    propagation:
+  #      type: b3
+  #    sampling:
+  #      probability: 1.0
   endpoint:
     health:
       show-details: always
