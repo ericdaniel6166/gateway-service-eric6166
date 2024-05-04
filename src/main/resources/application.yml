@@ -21,7 +21,7 @@ app:
   keycloak:
     host: localhost # change
     port: 8090
-  microservices-auth-client:
+  microservices-admin-client:
     #    client-id: microservices-auth-client
     client-id: microservices-admin-client
     client-secret: 123456789
@@ -64,8 +64,8 @@ spring:
         registration:
           microservices-admin-client:
             provider: keycloak
-            client-id: ${app.microservices-auth-client.client-id}
-            client-secret: ${app.microservices-auth-client.client-secret}
+            client-id: ${app.microservices-admin-client.client-id}
+            client-secret: ${app.microservices-admin-client.client-secret}
             client-authentication-method: client_secret_basic
             authorization-grant-type: authorization_code
             redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
