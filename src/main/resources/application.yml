@@ -1,28 +1,37 @@
 app:
-  application-name: gateway # change
+  name: gateway # change
   hostname: localhost # change
   server-port: 8181
   eureka:
     hostname: localhost # change
     port: 8761
-  application-version: v1
-  user-service-context-path: api/user/${app.application-version}
-  product-service-context-path: api/product/${app.application-version}
-  order-service-context-path: api/order/${app.application-version}
-  inventory-service-context-path: api/inventory/${app.application-version}
-  payment-service-context-path: api/payment/${app.application-version}
-  notification-service-context-path: api/notification/${app.application-version}
-  api-docs-path: api-docs
+  version: v1
+  user-service:
+    name: user
+    context-path: api/${app.user-service.name}/${app.version}
+  order-service:
+    name: order
+    context-path: api/${app.order-service.name}/${app.version}
+  inventory-service:
+    name: inventory
+    context-path: api/${app.inventory-service.name}/${app.version}
+  payment-service:
+    name: payment
+    context-path: api/${app.payment-service.name}/${app.version}
+  notification-service:
+    name: notification
+    context-path: api/${app.notification-service.name}/${app.version}
+  springdoc:
+    context-path: api-docs
   zipkin:
     hostname: localhost # change
     server-port: 9411
     context-path: api/v2/spans
     endpoint: http://${app.zipkin.hostname}:${app.zipkin.server-port}/${app.zipkin.context-path}
   keycloak:
-    host: localhost # change
+    hostname: localhost # change
     port: 8090
   microservices-admin-client:
-    #    client-id: microservices-auth-client
     client-id: microservices-admin-client
     client-secret: 123456789
 
@@ -30,12 +39,11 @@ security:
   enabled: true
   skip-urls:
     - /eureka/**
-    - /${app.user-service-context-path}/**
-    - /${app.product-service-context-path}/**
-    - /${app.order-service-context-path}/**
-    - /${app.inventory-service-context-path}/**
-    - /${app.payment-service-context-path}/**
-    - /${app.notification-service-context-path}/**
+    - /${app.user-service.context-path}/**
+    - /${app.order-service.context-path}/**
+    - /${app.inventory-service.context-path}/**
+    - /${app.payment-service.context-path}/**
+    - /${app.notification-service.context-path}/**
     - /swagger-ui.html
     - /webjars/swagger-ui/**
     - /v3/api-docs/**
@@ -45,7 +53,7 @@ security:
 
 spring:
   application:
-    name: ${app.application-name}-service
+    name: ${app.name}-service
   profiles:
     active: local
   main:
@@ -55,12 +63,12 @@ spring:
       client:
         provider:
           keycloak:
-            authorization-uri: http://${app.keycloak.host}:${app.keycloak.port}/realms/spring-boot-microservices-realm/protocol/openid-connect/auth
-            token-uri: http://${app.keycloak.host}:${app.keycloak.port}/realms/spring-boot-microservices-realm/protocol/openid-connect/token
-            user-info-uri: http://${app.keycloak.host}:${app.keycloak.port}/realms/spring-boot-microservices-realm/protocol/openid-connect/userinfo
+            authorization-uri: http://${app.keycloak.hostname}:${app.keycloak.port}/realms/spring-boot-microservices-realm/protocol/openid-connect/auth
+            token-uri: http://${app.keycloak.hostname}:${app.keycloak.port}/realms/spring-boot-microservices-realm/protocol/openid-connect/token
+            user-info-uri: http://${app.keycloak.hostname}:${app.keycloak.port}/realms/spring-boot-microservices-realm/protocol/openid-connect/userinfo
             user-name-attribute: sub
-            jwk-set-uri: http://${app.keycloak.host}:${app.keycloak.port}/realms/spring-boot-microservices-realm/protocol/openid-connect/certs
-            issuer-uri: http://${app.keycloak.host}:${app.keycloak.port}/realms/spring-boot-microservices-realm
+            jwk-set-uri: http://${app.keycloak.hostname}:${app.keycloak.port}/realms/spring-boot-microservices-realm/protocol/openid-connect/certs
+            issuer-uri: http://${app.keycloak.hostname}:${app.keycloak.port}/realms/spring-boot-microservices-realm
         registration:
           microservices-admin-client:
             provider: keycloak
@@ -90,37 +98,32 @@ spring:
       default-filters:
         - TokenRelay
       routes:
-        #        - id: product-service
-        #          uri: lb://product-service
-        #          predicates:
-        #            - Path=/api/product/**
         - id: user-service
           uri: lb://user-service
           predicates:
             - Path=/api/user/**
-        #        - id: order-service
-        #          uri: lb://order-service
-        #          predicates:
-        #            - Path=/api/order/**
+        - id: order-service
+          uri: lb://order-service
+          predicates:
+            - Path=/api/order/**
         - id: inventory-service
           uri: lb://inventory-service
           predicates:
             - Path=/api/inventory/**
-        #        - id: notification-service
-        #          uri: lb://notification-service
-        #          predicates:
-        #            - Path=/api/notification/**
-        #        - id: payment-service
-        #          uri: lb://payment-service
-        #          predicates:
-        #            - Path=/api/payment/**
+        - id: notification-service
+          uri: lb://notification-service
+          predicates:
+            - Path=/api/notification/**
+        - id: payment-service
+          uri: lb://payment-service
+          predicates:
+            - Path=/api/payment/**
         - id: discovery-serverice
           uri: http://${app.eureka.hostname}:${app.eureka.port}
           predicates:
             - Path=/eureka/web
           filters:
             - SetPath=/
-
         - id: discovery-serverice-static
           uri: http://${app.eureka.hostname}:${app.eureka.port}
           predicates:
@@ -141,17 +144,15 @@ springdoc:
   swagger-ui:
     urls:
       - name: user-service
-        url: http://${app.hostname}:${app.server-port}/${app.user-service-context-path}/${app.api-docs-path}
-      #      - name: product-service
-      #        url: http://${app.hostname}:${app.server-port}/${app.product-service-context-path}/${app.api-docs-path}
-      #      - name: order-service
-      #        url: http://${app.hostname}:${app.server-port}/${app.order-service-context-path}/${app.api-docs-path}
+        url: http://${app.hostname}:${app.server-port}/${app.user-service.context-path}/${app.springdoc.context-path}
+      - name: order-service
+        url: http://${app.hostname}:${app.server-port}/${app.order-service.context-path}/${app.springdoc.context-path}
       - name: inventory-service
-        url: http://${app.hostname}:${app.server-port}/${app.inventory-service-context-path}/${app.api-docs-path}
-    #      - name: payment-service
-    #        url: http://${app.hostname}:${app.server-port}/${app.payment-service-context-path}/${app.api-docs-path}
-    #      - name: notification-service
-    #        url: http://${app.hostname}:${app.server-port}/${app.notification-service-context-path}/${app.api-docs-path}
+        url: http://${app.hostname}:${app.server-port}/${app.inventory-service.context-path}/${app.springdoc.context-path}
+      - name: payment-service
+        url: http://${app.hostname}:${app.server-port}/${app.payment-service.context-path}/${app.springdoc.context-path}
+      - name: notification-service
+        url: http://${app.hostname}:${app.server-port}/${app.notification-service.context-path}/${app.springdoc.context-path}
 
     path: /swagger-ui.html
 
@@ -160,16 +161,17 @@ logging:
     root: INFO
     org.springframework.cloud.gateway.route.RouteDefinitionRouteLocator: INFO
     org.springframework.cloud.gateway: TRACE
+#    org.springframework.cloud.gateway: INFO
   pattern:
     level: "%5p[${spring.application.name:},%X{traceId:-},%X{spanId:-}]"
 
 management:
-  #  tracing:
-  #    enabled: true
-  #    propagation:
-  #      type: b3
-  #    sampling:
-  #      probability: 1.0
+  tracing:
+    enabled: true
+    propagation:
+      type: b3
+    sampling:
+      probability: 1.0
   endpoint:
     health:
       show-details: always
@@ -182,9 +184,9 @@ management:
     web:
       exposure:
         include: "*"
-#  zipkin:
-#    tracing:
-#      endpoint: ${app.zipkin.endpoint}
+  zipkin:
+    tracing:
+      endpoint: ${app.zipkin.endpoint}
 
 
 

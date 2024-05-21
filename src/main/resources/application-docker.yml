@@ -2,14 +2,12 @@ app:
   eureka:
     hostname: discovery-service
   keycloak:
-    host: keycloak
+    hostname: keycloak
   zipkin:
     hostname: zipkin
 
-#spring:
-#  profiles:
-#    active: docker
 
 logging:
   level:
     root: INFO
+    org.springframework.cloud.gateway: INFO
