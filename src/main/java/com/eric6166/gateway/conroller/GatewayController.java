@@ -11,10 +11,9 @@
 //@RestController
 //@RequestMapping("/auth")
 //@RequiredArgsConstructor
-//@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 //public class GatewayController {
 //
-////    OAuth2AuthorizedClient oAuth2AuthorizedClient;
+////    private final OAuth2AuthorizedClient oAuth2AuthorizedClient;
 //
 ////    @PostMapping(value = "/token")
 ////    public Mono<String> getToken() {
